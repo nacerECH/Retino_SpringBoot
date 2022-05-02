@@ -1,0 +1,12 @@
+package ensaf.pfa.projet.RitiDia.shared.requests;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data @NoArgsConstructor @AllArgsConstructor
+public class ControlRequest {
+
+    private Long medcinID;
+    private Long patientID;
+}
