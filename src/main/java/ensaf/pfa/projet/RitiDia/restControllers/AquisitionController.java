@@ -12,7 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 
 @RestController
-@RequestMapping("/controls/{id}/aquisitions")
+///controls/{id}/aquisitions
+@RequestMapping("/aquisitions")
 public class AquisitionController {
 
     @Autowired

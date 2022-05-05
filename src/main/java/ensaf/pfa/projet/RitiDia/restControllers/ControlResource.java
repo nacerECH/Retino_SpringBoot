@@ -33,11 +33,13 @@ public class ControlResource {
                 .getSingleControl(id);
         return new ResponseEntity<>(control,HttpStatus.OK);
     }
+
     @PutMapping("/{control_id}/update")
     public ResponseEntity<Object> setBilanToControl(@PathVariable("control_id") Long id, @RequestBody ControlWithBilanReq control){
         ControlWithBilanRep response = controlService.updateControl(id,control);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
     @PostMapping("/createControl")
     public ResponseEntity<?> createControl(ControlRequest controlRequest){
         ControlResponseDto controlResponseDto = controlService.createControl(controlRequest);
