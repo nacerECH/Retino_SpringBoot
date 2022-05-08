@@ -31,6 +31,12 @@ public class Medcin {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Collection<Control> controles;
 
+    @OneToMany(mappedBy = "medcin",fetch = FetchType.LAZY)
+    private Collection<Echantillon> echantillons;
+
+
+
+
     public Medcin(Medcin medcin) {
         if(medcin != null){
             BeanUtils.copyProperties(medcin,this);
