@@ -5,9 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data @NoArgsConstructor @AllArgsConstructor
-public class ControlRequest {
+public class LoginUserRequest {
 
-    private Long medcinID;
-    private Long patientID;
-
+    private String email;
+    private String password;
 }

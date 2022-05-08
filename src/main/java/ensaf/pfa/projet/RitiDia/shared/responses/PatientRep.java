@@ -9,6 +9,7 @@ import java.util.Date;
 
 @Data @NoArgsConstructor @AllArgsConstructor
 public class PatientRep  {
+    private  Long id;
     private String nom;
     private String prenom;
     private boolean est_diabetique;

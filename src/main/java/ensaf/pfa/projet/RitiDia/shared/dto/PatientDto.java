@@ -22,6 +22,7 @@ public class PatientDto implements Serializable {
     private String sexe;
     private Stade stade_od;
     private Stade stade_og;
+    private Long medcinID;
     private Date derniere_consultation;
 
 }

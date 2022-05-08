@@ -15,5 +15,5 @@ public interface IControlService {
     public ControlDetailsDto getSingleControl(Long id);
     public ControlWithBilanRep updateControl(Long id, ControlWithBilanReq new_control);
     public Collection<Control> getAllControls();
-    public ControlResponseDto createControl(ControlRequest controlRequest);
+   // public ControlResponseDto createControl(ControlRequest controlRequest);
 }

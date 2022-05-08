@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -30,6 +31,8 @@ public class Medcin {
     @OneToMany(mappedBy = "medcin",fetch = FetchType.LAZY)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Collection<Control> controles;
+
+
 
     public Medcin(Medcin medcin) {
         if(medcin != null){

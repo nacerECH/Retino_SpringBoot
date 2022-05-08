@@ -1,11 +1,11 @@
 package ensaf.pfa.projet.RitiDia.services.implementations;
  //Author : Moncef Tokka
 
+import ensaf.pfa.projet.RitiDia.Repositories.MedcinRepository;
 import ensaf.pfa.projet.RitiDia.Repositories.PatientRepository;
 import ensaf.pfa.projet.RitiDia.entities.Control;
 import ensaf.pfa.projet.RitiDia.entities.Medcin;
 import ensaf.pfa.projet.RitiDia.entities.Patient;
-import ensaf.pfa.projet.RitiDia.entities.enumerations.Stade;
 import ensaf.pfa.projet.RitiDia.services.interfaces.IPatientService;
 import ensaf.pfa.projet.RitiDia.shared.dto.ControlDto;
 import ensaf.pfa.projet.RitiDia.shared.dto.MedcinDto;
@@ -13,7 +13,6 @@ import ensaf.pfa.projet.RitiDia.shared.dto.PatientDetailsDto;
 import ensaf.pfa.projet.RitiDia.shared.dto.PatientDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -21,7 +20,7 @@ import org.springframework.util.CollectionUtils;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
-import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 
@@ -30,25 +29,43 @@ import java.util.stream.Collectors;
 public class PatientService implements IPatientService {
     @Autowired
     PatientRepository patientRepository;
+    @Autowired
+    MedcinRepository medcinRepository;
 
 
     @Override
-    public PatientDto createPatient(PatientDto patientDto) {
-        Patient checkPatient = patientRepository.findByCin(patientDto.getCin());
-        if(checkPatient != null) throw new RuntimeException("Le patient est déjà existé!");
+    public PatientDto createPatient(Long id, PatientDto patientDto) {
+        Optional<Medcin> medcinEntity = medcinRepository.findById(id);
+        Long medcinID;
+        if(medcinEntity.isPresent()){
+            medcinID = medcinEntity.get().getId();
 
-        Patient patient = new Patient();
-        BeanUtils.copyProperties(patientDto,patient);
-        patient.setUuid(UUID.randomUUID().toString());
-        System.out.println(patient.getUuid());
-        Patient newPatient = patientRepository.save(patient);
-        PatientDto returnPatient = new PatientDto();
-        BeanUtils.copyProperties(newPatient, returnPatient);
+            Patient checkPatient = patientRepository.findByCin(patientDto.getCin());
+            if(checkPatient != null) throw new RuntimeException("Le patient est déjà existé!");
 
-        return returnPatient;
+            Patient patient = new Patient();
+            BeanUtils.copyProperties(patientDto,patient);
+            patient.setUuid(UUID.randomUUID().toString());
+            patient.setMedcinID(medcinID);
+            System.out.println(patient.getUuid());
+            Patient newPatient = patientRepository.save(patient);
+            PatientDto returnPatient = new PatientDto();
+            BeanUtils.copyProperties(newPatient, returnPatient);
+
+            return returnPatient;
+
+        }
+        else{
+            throw new RuntimeException("Medcin of id "+" "+id+" doesnt exists");
+        }
+
     }
-    public Collection<PatientDto> getPatients(){
-        List<Patient> patients = patientRepository.findAll();
+    public Collection<PatientDto> getPatients(Long id,String pattern){
+
+        List<Patient> patients = patientRepository.findPatientsByMedcinIdAndPattern(id,pattern);
+        if(CollectionUtils.isEmpty(patients))
+            throw new RuntimeException("Aucun patient trouvé!");
+
         patients.forEach(patient -> patient.getControles()
                 .forEach(control -> control.setCreated_at(control.getDateControl().getDate_control())));
         patients.forEach(patient ->patient.setControles(patient.getControles()
@@ -77,9 +94,9 @@ public class PatientService implements IPatientService {
 
         return patientsDto;
     }
-    public PatientDetailsDto getSinglePatient(Long id) {
-        if(patientRepository.findById(id) ==null) throw new RuntimeException("le patient que vous tentez de trouver est introuvable");
-        Patient patient = patientRepository.findById(id).get();
+    public PatientDetailsDto getSinglePatient(Long id, Long medcinID) {
+        if(patientRepository.findByIdAndMedcinID(id,medcinID) ==null) throw new RuntimeException("le patient que vous tentez de trouver est introuvable");
+        Patient patient = patientRepository.findByIdAndMedcinID(id,medcinID);
         PatientDetailsDto patientDetailsDto = new PatientDetailsDto();
         BeanUtils.copyProperties(patient,patientDetailsDto);
         Collection<ControlDto> custom_controls= new ArrayList<>();
@@ -108,5 +125,12 @@ public class PatientService implements IPatientService {
 
         return patientDetailsDto;
 
+    }
+
+    public Collection<Patient> getPatientsByMedcinId(Long id) {
+
+
+
+        return null;
     }
 }

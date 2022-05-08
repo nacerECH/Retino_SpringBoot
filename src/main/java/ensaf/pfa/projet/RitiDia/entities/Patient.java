@@ -1,5 +1,6 @@
 package ensaf.pfa.projet.RitiDia.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,8 +28,9 @@ public class Patient {
     private String tel;
     private String sexe;
     @OneToMany(mappedBy = "patient", fetch = FetchType.EAGER)
-
     private Collection<Control> controles = new ArrayList<>();
+
+    private Long medcinID;
 
     public Patient(Patient patient) {
         if(patient != null){
