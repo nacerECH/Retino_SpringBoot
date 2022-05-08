@@ -40,12 +40,5 @@ public class ControlResource {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/createControl")
-    public ResponseEntity<?> createControl(ControlRequest controlRequest){
-        ControlResponseDto controlResponseDto = controlService.createControl(controlRequest);
-        ControlResponse controlResponse = new ControlResponse();
-        BeanUtils.copyProperties(controlResponseDto,controlResponse);
 
-        return new ResponseEntity<>(controlResponse,HttpStatus.OK);
-    }
 }

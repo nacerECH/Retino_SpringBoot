@@ -6,6 +6,7 @@ import ensaf.pfa.projet.RitiDia.services.interfaces.IMedcinService;
 import ensaf.pfa.projet.RitiDia.shared.dto.RegistredMedcinDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
@@ -17,6 +18,8 @@ public class MedcinService implements IMedcinService {
 
     @Autowired
     MedcinRepository medcinRepository;
+    @Autowired
+    BCryptPasswordEncoder bCryptPasswordEncoder;
     
 
     @Override
@@ -25,7 +28,7 @@ public class MedcinService implements IMedcinService {
                 && medcinRepository.findByEmail(medcin.getEmail()) == null){
             Medcin _medcin = new Medcin();
             BeanUtils.copyProperties(medcin,_medcin);
-            _medcin.setEncryptedPassword(encodePassword(medcin.getPassword()));
+            _medcin.setEncryptedPassword(bCryptPasswordEncoder.encode(medcin.getPassword()));
             _medcin.setUuid(UUID.randomUUID().toString());
             
             Medcin saved_medcin = medcinRepository.save(_medcin);

@@ -18,12 +18,12 @@ public class Control {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne(mappedBy = "controle", fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "controle", fetch = FetchType.EAGER,cascade=CascadeType.ALL)
 
     private DateControl dateControl;
-    @OneToMany(mappedBy = "controle", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "controle", fetch = FetchType.EAGER,cascade=CascadeType.ALL)
     private Collection<Aquisition> aquisitions;
-    @OneToOne(mappedBy = "controle", fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "controle", fetch = FetchType.EAGER,cascade=CascadeType.ALL)
     private StadePatient stadePatient;
     @ManyToOne
     private Medcin medcin;
@@ -32,6 +32,7 @@ public class Control {
     private Patient patient;
     @Transient
     private Date created_at;
+
     private String medcin_2;
     private String bilan;
 

@@ -10,6 +10,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.annotation.Resource;
 import java.security.MessageDigest;
@@ -53,6 +54,15 @@ public class RitiDiaApplication implements CommandLineRunner {
 		storageService.init();
 	}
 
+	@Bean
+	public BCryptPasswordEncoder bCryptPasswordEncoder(){
+		return new BCryptPasswordEncoder();
+	}
+
+	@Bean
+	public AppContext appContext(){
+		return new AppContext();
+	}
 
 
 

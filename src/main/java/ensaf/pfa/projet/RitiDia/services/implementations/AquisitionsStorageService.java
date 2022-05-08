@@ -1,5 +1,6 @@
 package ensaf.pfa.projet.RitiDia.services.implementations;
 
+import ensaf.pfa.projet.RitiDia.entities.enumerations.Eye;
 import ensaf.pfa.projet.RitiDia.services.interfaces.IAquisitionService;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -16,9 +17,11 @@ import java.util.stream.Stream;
 @Service
 public class AquisitionsStorageService implements IAquisitionService {
     private final Path root = Paths.get("uploads");
+    private final static int COUNTER = 0;
+
     @Override
     public void init() {
-        try{
+        try {
             Files.createDirectories(root);
         } catch (IOException e) {
             throw new RuntimeException("Could not initialize folder for upload!");
@@ -26,14 +29,34 @@ public class AquisitionsStorageService implements IAquisitionService {
     }
 
     @Override
-    public void save(MultipartFile file) {
+    public String[] save(MultipartFile file) {
 
         try {
+            String filename = file.getOriginalFilename();
+            String[] filename_split = filename.split("\\.");
+            String[] stored_filename = new String[2];
+
+            if (filename_split[0].endsWith("OG")) {
+                stored_filename[0] = filename.replace(filename_split[0],
+                        String.valueOf(System.currentTimeMillis()) + "_left");
+                stored_filename[1] = String.valueOf(Eye.LEFT);
+
+
+            } else if (filename_split[0].endsWith("OD")) {
+                stored_filename[0] = filename.replace(filename_split[0],
+                        String.valueOf(System.currentTimeMillis()) + "_right");
+                stored_filename[1] = String.valueOf(Eye.RIGHT);
+
+            } else {
+                System.out.println("cette photo est inapproprié");
+            }
+
             Files.copy(file.getInputStream(),
-                            this.root.resolve(file.getOriginalFilename()));
+                    this.root.resolve(stored_filename[0]));
+            return stored_filename;
 
         } catch (IOException e) {
-            throw new RuntimeException("could not store the file. Error: "+e.getMessage()+" caused by: "+e.getCause());
+            throw new RuntimeException("could not store the file. Error: " + e.getMessage() + " caused by: " + e.getCause());
         }
     }
 

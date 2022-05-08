@@ -7,22 +7,17 @@ import ensaf.pfa.projet.RitiDia.Repositories.PatientRepository;
 import ensaf.pfa.projet.RitiDia.entities.*;
 import ensaf.pfa.projet.RitiDia.entities.enumerations.Eye;
 import ensaf.pfa.projet.RitiDia.services.interfaces.IControlService;
+import ensaf.pfa.projet.RitiDia.shared.AppConstants;
 import ensaf.pfa.projet.RitiDia.shared.dto.*;
-import ensaf.pfa.projet.RitiDia.shared.requests.ControlRequest;
 import ensaf.pfa.projet.RitiDia.shared.requests.ControlWithBilanReq;
 import ensaf.pfa.projet.RitiDia.shared.responses.ControlWithBilanRep;
-import ensaf.pfa.projet.RitiDia.shared.responses.MedcinResponse;
-import ensaf.pfa.projet.RitiDia.shared.responses.PatientRep;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
@@ -35,6 +30,8 @@ public class ControlService implements IControlService {
     PatientRepository patientRepository;
     @Autowired
     MedcinRepository medcinRepository;
+    @Autowired
+    AquisitionsStorageService aquisitionsStorageService;
 
     @Override
     public HalfControlDetailsDto getHalfControl(Long id) {
@@ -154,36 +151,78 @@ public class ControlService implements IControlService {
         return controls;
     }
 
-    @Override
-    public ControlResponseDto createControl(ControlRequest controlRequest) {
+//    @Override
+//    public ControlResponseDto createControl(ControlRequest controlRequest) {
+//
+//        Optional<Patient> patient = patientRepository.findById(controlRequest.getPatientID());
+//        patient.orElseThrow(()-> new RuntimeException("patient non trouvé"));
+//        Optional<Medcin> medcin = medcinRepository.findById(controlRequest.getMedcinID());
+//        medcin.orElseThrow(()-> new RuntimeException("medcin non trouvé"));
+//
+//        Control control = new Control();
+//        control.setPatient(patient.map(Patient::new).get());
+//        control.setMedcin(medcin.map(Medcin::new).get());
+//        DateControl dateControl = new DateControl();
+//        dateControl.setDate_control(new Date());
+//        control.setDateControl(dateControl);
+//        control.setCreated_at(control.getDateControl().getDate_control());
+//
+//        Control savedControl = controlRepository.save(control);
+//        ControlResponseDto controlResponseDto = new ControlResponseDto();
+//        PatientRep patientRep = new PatientRep();
+//        MedcinResponse medcinResponse = new MedcinResponse();
+//
+//        BeanUtils.copyProperties(control.getPatient(),patientRep);
+//        BeanUtils.copyProperties(control.getMedcin(),medcinResponse);
+//
+//        controlResponseDto.setPatient(patientRep);
+//        controlResponseDto.setMedcin(medcinResponse);
+//        controlResponseDto.setCreated_at(control.getCreated_at());
+//        controlResponseDto.setControlID(control.getId());
+//
+//
+//        return controlResponseDto;
+//    }
 
-        Optional<Patient> patient = patientRepository.findById(controlRequest.getPatientID());
-        patient.orElseThrow(()-> new RuntimeException("patient non trouvé"));
-        Optional<Medcin> medcin = medcinRepository.findById(controlRequest.getMedcinID());
-        medcin.orElseThrow(()-> new RuntimeException("medcin non trouvé"));
+
+
+
+
+
+
+    public void addControl(Long medcinID, Long patientID, MultipartFile[] files){
 
         Control control = new Control();
-        control.setPatient(patient.map(Patient::new).get());
-        control.setMedcin(medcin.map(Medcin::new).get());
+        Optional<Patient> patient = patientRepository.findById(patientID);
+        patient.orElseThrow(()-> new RuntimeException("patient non trouvé"));
+        Optional<Medcin> medcin = medcinRepository.findById(medcinID);
+        medcin.orElseThrow(()-> new RuntimeException("medcin non trouvé"));
+        control.setPatient(patient.get());
+        control.setMedcin(medcin.get());
+
         DateControl dateControl = new DateControl();
         dateControl.setDate_control(new Date());
         control.setDateControl(dateControl);
-        control.setCreated_at(control.getDateControl().getDate_control());
+        //control.setCreated_at(dateControl.getDate_control());
 
-        Control savedControl = controlRepository.save(control);
-        ControlResponseDto controlResponseDto = new ControlResponseDto();
-        PatientRep patientRep = new PatientRep();
-        MedcinResponse medcinResponse = new MedcinResponse();
-
-        BeanUtils.copyProperties(control.getPatient(),patientRep);
-        BeanUtils.copyProperties(control.getMedcin(),medcinResponse);
-
-        controlResponseDto.setPatient(patientRep);
-        controlResponseDto.setMedcin(medcinResponse);
-        controlResponseDto.setCreated_at(control.getCreated_at());
-        controlResponseDto.setControlID(control.getId());
+        Collection<Aquisition> aquisitions = new ArrayList<>();
 
 
-        return controlResponseDto;
+
+
+        List<String> fileNames = new ArrayList<>();
+        Arrays.asList(files).stream().forEach(file -> {
+            String[]  saved_file_info = aquisitionsStorageService.save(file);
+            Aquisition aquisition = new Aquisition();
+            aquisition.setType_oeil(Eye.valueOf(saved_file_info[1]));
+            aquisition.setUuid(UUID.randomUUID());
+            aquisition.setUrl(AppConstants.LOAD_URL+"/"+saved_file_info[0]);
+            aquisition.setControle(control);
+            aquisitions.add(aquisition);
+            fileNames.add(saved_file_info[0]);
+        });
+        control.setAquisitions(aquisitions);
+        dateControl.setControle(control);
+        controlRepository.save(control);
     }
 }
