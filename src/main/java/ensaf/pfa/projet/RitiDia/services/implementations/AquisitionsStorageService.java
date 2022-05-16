@@ -48,7 +48,7 @@ public class AquisitionsStorageService implements IAquisitionService {
                 stored_filename[1] = String.valueOf(Eye.RIGHT);
 
             } else {
-                System.out.println("cette photo est inapproprié");
+                throw new RuntimeException("le nom du ficher doit se terminer soit avec OG soit avec OD");
             }
 
             Files.copy(file.getInputStream(),

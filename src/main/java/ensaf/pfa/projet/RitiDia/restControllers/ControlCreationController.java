@@ -1,6 +1,7 @@
 package ensaf.pfa.projet.RitiDia.restControllers;
 
 import ensaf.pfa.projet.RitiDia.services.implementations.ControlService;
+import ensaf.pfa.projet.RitiDia.shared.requests.StadeRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +23,16 @@ public class ControlCreationController {
     @PostMapping("/addControl")
     public ResponseEntity<?> createControl(@PathVariable("medcin_id") Long medcin_id,
                                            @PathVariable("patient_id") Long patient_id,
-                                           @RequestParam("images")MultipartFile[] aquisitions){
+                                           @RequestParam("images")MultipartFile[] aquisitions,
+                                           @RequestParam("sog") String sog,
+                                           @RequestParam("sod") String sod
+                                          ){
 
 
         String message = "";
         try{
             List<String> fileNames = new ArrayList<>();
-            controlService.addControl(medcin_id,patient_id,aquisitions);
+            controlService.addControl(medcin_id,patient_id,aquisitions, sod, sog);
             message = "Uploaded the files successfully: " + fileNames;
             return ResponseEntity.status(HttpStatus.OK).body(message);
         }catch (Exception e) {

@@ -6,6 +6,7 @@ import ensaf.pfa.projet.RitiDia.Repositories.MedcinRepository;
 import ensaf.pfa.projet.RitiDia.Repositories.PatientRepository;
 import ensaf.pfa.projet.RitiDia.entities.*;
 import ensaf.pfa.projet.RitiDia.entities.enumerations.Eye;
+import ensaf.pfa.projet.RitiDia.entities.enumerations.Stade;
 import ensaf.pfa.projet.RitiDia.services.interfaces.IControlService;
 import ensaf.pfa.projet.RitiDia.shared.AppConstants;
 import ensaf.pfa.projet.RitiDia.shared.dto.*;
@@ -190,7 +191,7 @@ public class ControlService implements IControlService {
 
 
 
-    public void addControl(Long medcinID, Long patientID, MultipartFile[] files){
+    public void addControl(Long medcinID, Long patientID, MultipartFile[] files, String sod, String sog){
 
         Control control = new Control();
         Optional<Patient> patient = patientRepository.findById(patientID);
@@ -207,9 +208,6 @@ public class ControlService implements IControlService {
 
         Collection<Aquisition> aquisitions = new ArrayList<>();
 
-
-
-
         List<String> fileNames = new ArrayList<>();
         Arrays.asList(files).stream().forEach(file -> {
             String[]  saved_file_info = aquisitionsStorageService.save(file);
@@ -222,6 +220,11 @@ public class ControlService implements IControlService {
             fileNames.add(saved_file_info[0]);
         });
         control.setAquisitions(aquisitions);
+        StadePatient stadePatient = new StadePatient();
+        stadePatient.setSod(Stade.valueOf(sod));
+        stadePatient.setSog(Stade.valueOf(sog));
+        stadePatient.setControle(control);
+        control.setStadePatient(stadePatient);
         dateControl.setControle(control);
         controlRepository.save(control);
     }

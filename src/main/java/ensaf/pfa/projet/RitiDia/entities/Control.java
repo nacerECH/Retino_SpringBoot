@@ -14,8 +14,6 @@ import java.util.Date;
 
 public class Control {
 
-
-
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @OneToOne(mappedBy = "controle", fetch = FetchType.EAGER,cascade=CascadeType.ALL)
@@ -35,7 +33,4 @@ public class Control {
 
     private String medcin_2;
     private String bilan;
-
-
-
 }
