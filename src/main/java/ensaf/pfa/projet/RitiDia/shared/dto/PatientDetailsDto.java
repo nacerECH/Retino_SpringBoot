@@ -19,4 +19,5 @@ public class PatientDetailsDto implements Serializable {
     private boolean est_diabetique;
     private String sexe;
     private Collection<ControlDto> controlsDto;
+    private Date derniere_consultation;
 }

@@ -97,7 +97,16 @@ public class PatientService implements IPatientService {
     public PatientDetailsDto getSinglePatient(Long id, Long medcinID) {
         if(patientRepository.findByIdAndMedcinID(id,medcinID) ==null) throw new RuntimeException("le patient que vous tentez de trouver est introuvable");
         Patient patient = patientRepository.findByIdAndMedcinID(id,medcinID);
+
         PatientDetailsDto patientDetailsDto = new PatientDetailsDto();
+        if(!CollectionUtils.isEmpty(patient.getControles())){
+            patient.getControles()
+                    .forEach(control -> control.setCreated_at(control.getDateControl().getDate_control()));
+            patient.setControles(patient.getControles()
+                    .stream().sorted(Comparator.comparing(Control::getCreated_at).reversed()).collect(Collectors.toList()));
+            patientDetailsDto.setDerniere_consultation(patient.getControles().stream().findFirst().get().getDateControl().getDate_control());
+        }
+
         BeanUtils.copyProperties(patient,patientDetailsDto);
         Collection<ControlDto> custom_controls= new ArrayList<>();
         patient.getControles().forEach(control -> {
@@ -111,6 +120,8 @@ public class PatientService implements IPatientService {
                 controlDto.setStade_od(control.getStadePatient().getSod());
                 controlDto.setStade_og(control.getStadePatient().getSog());
             }
+
+            controlDto.setCreated_at(control.getDateControl().getDate_control());
             controlDto.setId(control.getId());
             custom_controls.add(controlDto);
         });

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @Data @NoArgsConstructor @AllArgsConstructor
 public class ControlDto implements Serializable {
@@ -13,5 +14,5 @@ public class ControlDto implements Serializable {
     private MedcinDto medcin;
     private Stade stade_og;
     private Stade stade_od;
-
+    private Date created_at;
 }

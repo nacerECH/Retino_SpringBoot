@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 @RestController
@@ -52,14 +53,14 @@ public class PatientController {
 
     }
     @PostMapping("/patients")
-    public ResponseEntity<Object> getPatientsByMedcinAndCriteria(@PathVariable("medcin_id") Long id,
+    public Object getPatientsByMedcinAndCriteria(@PathVariable("medcin_id") Long id,
                                               @RequestBody StringRequest patternRequest){
         String pattern = patternRequest.getNom_prenom_cin();
         try{
             Collection<PatientDto> patients = patientService.getPatients(id,pattern);
             return new ResponseEntity<>(patients,HttpStatus.OK);
         }catch (RuntimeException e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+            return new ArrayList<String>();
         }
 
     }

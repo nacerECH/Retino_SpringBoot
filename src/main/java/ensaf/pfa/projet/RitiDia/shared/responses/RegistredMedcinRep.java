@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 @Data @NoArgsConstructor @AllArgsConstructor
 public class RegistredMedcinRep {
+
     private String inpe;
     private String nom;
     private String prenom;

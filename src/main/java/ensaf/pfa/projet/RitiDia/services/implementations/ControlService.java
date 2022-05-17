@@ -6,6 +6,7 @@ import ensaf.pfa.projet.RitiDia.Repositories.MedcinRepository;
 import ensaf.pfa.projet.RitiDia.Repositories.PatientRepository;
 import ensaf.pfa.projet.RitiDia.entities.*;
 import ensaf.pfa.projet.RitiDia.entities.enumerations.Eye;
+import ensaf.pfa.projet.RitiDia.entities.enumerations.Stade;
 import ensaf.pfa.projet.RitiDia.services.interfaces.IControlService;
 import ensaf.pfa.projet.RitiDia.shared.AppConstants;
 import ensaf.pfa.projet.RitiDia.shared.dto.*;
@@ -190,7 +191,7 @@ public class ControlService implements IControlService {
 
 
 
-    public void addControl(Long medcinID, Long patientID, MultipartFile[] files){
+    public Long addControl(Long medcinID, Long patientID, MultipartFile[] files, String sod, String sog){
 
         Control control = new Control();
         Optional<Patient> patient = patientRepository.findById(patientID);
@@ -207,22 +208,27 @@ public class ControlService implements IControlService {
 
         Collection<Aquisition> aquisitions = new ArrayList<>();
 
-
-
-
         List<String> fileNames = new ArrayList<>();
         Arrays.asList(files).stream().forEach(file -> {
             String[]  saved_file_info = aquisitionsStorageService.save(file);
             Aquisition aquisition = new Aquisition();
             aquisition.setType_oeil(Eye.valueOf(saved_file_info[1]));
             aquisition.setUuid(UUID.randomUUID());
-            aquisition.setUrl(AppConstants.LOAD_URL+"/"+saved_file_info[0]);
+//            aquisition.setUrl(AppConstants.LOAD_URL+"/"+saved_file_info[0]);
+            aquisition.setUrl("uploads/files/"+saved_file_info[0]);
+
             aquisition.setControle(control);
             aquisitions.add(aquisition);
             fileNames.add(saved_file_info[0]);
         });
         control.setAquisitions(aquisitions);
+        StadePatient stadePatient = new StadePatient();
+        stadePatient.setSod(Stade.valueOf(sod));
+        stadePatient.setSog(Stade.valueOf(sog));
+        stadePatient.setControle(control);
+        control.setStadePatient(stadePatient);
         dateControl.setControle(control);
-        controlRepository.save(control);
+        Control savedControl =  controlRepository.save(control);
+        return savedControl.getId();
     }
 }

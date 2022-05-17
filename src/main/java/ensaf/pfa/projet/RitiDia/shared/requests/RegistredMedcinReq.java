@@ -9,6 +9,7 @@ import java.io.Serializable;
 
 @Data @NoArgsConstructor @AllArgsConstructor
 public class RegistredMedcinReq implements Serializable {
+
     private String inpe;
     private String nom;
     private String prenom;
