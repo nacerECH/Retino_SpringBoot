@@ -17,7 +17,7 @@ import java.util.Date;
 public class EchantillonResponce implements Serializable {
 
     private Long id;
-    private Date create_at;
+    private Date date_acquisition;
     private Eye eye ;
 
 }

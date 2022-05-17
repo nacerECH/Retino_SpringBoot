@@ -20,6 +20,6 @@ public class EchantillonIndexedRequest implements Serializable {
     private Long medcinID;
     private Eye eye ;
     private Stade stade;
-    private Collection<ImageDto> imageDtos ;
+   // private Collection<ImageDto> imageDtos ;
 
 }

@@ -16,8 +16,8 @@ import java.util.Collection;
 public interface EchantillonRepository extends JpaRepository<Echantillon, Long> {
 
 
-    @Query("select ech from Echantillon ech where ech.stade =: stade ")
-    public Collection<Echantillon> GetNotIndexedEchantillons(@Param("stade") Stade stade);
+    @Query("select ech from Echantillon ech where  ech.stade = ensaf.pfa.projet.RitiDia.entities.enumerations.Stade.NOT_INDEXED")
+    public Collection<Echantillon> GetNotIndexedEchantillons();
 
 
 }

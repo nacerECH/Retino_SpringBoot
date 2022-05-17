@@ -25,6 +25,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable().authorizeRequests()
                 .antMatchers(HttpMethod.POST,SecurityConstants.AUTHORIZED_URL)
                 .permitAll()
+                .antMatchers(HttpMethod.GET,"/uploads/files/**").permitAll()
                 .anyRequest().authenticated()
                 .and().addFilter(getAuthenticationFilter())
                 .addFilter(new AuthorizationFilter(authenticationManager()))

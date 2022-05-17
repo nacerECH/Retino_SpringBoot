@@ -17,8 +17,9 @@ import java.util.Date;
 public class EchantillonDetailsDto implements Serializable {
 
     private Long id;
-    private MedcinDto medcin;
-    private Date create_at;
+
+
+    private Date date_acquisition;
     private Eye eye ;
     private Stade stade;
     private Collection<ImageDto> imageDtos ;

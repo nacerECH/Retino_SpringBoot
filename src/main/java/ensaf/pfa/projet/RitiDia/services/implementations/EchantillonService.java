@@ -6,22 +6,25 @@ import ensaf.pfa.projet.RitiDia.Repositories.ImageRepository;
 import ensaf.pfa.projet.RitiDia.Repositories.MedcinRepository;
 import ensaf.pfa.projet.RitiDia.entities.Echantillon;
 import ensaf.pfa.projet.RitiDia.entities.Image;
-import ensaf.pfa.projet.RitiDia.entities.Medcin;
 import ensaf.pfa.projet.RitiDia.entities.enumerations.Stade;
 import ensaf.pfa.projet.RitiDia.services.interfaces.IEchantillonService;
 import ensaf.pfa.projet.RitiDia.shared.dto.EchantillonDetailsDto;
+import ensaf.pfa.projet.RitiDia.shared.dto.EchantillonDto;
 import ensaf.pfa.projet.RitiDia.shared.dto.ImageDto;
 import ensaf.pfa.projet.RitiDia.shared.requests.EchantillonIndexedRequest;
 import ensaf.pfa.projet.RitiDia.shared.requests.SetStadeEchantillon;
+import ensaf.pfa.projet.RitiDia.shared.responses.EchantillonDetailsResponse;
 import ensaf.pfa.projet.RitiDia.shared.responses.EchantillonResponce;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
+
+
+import java.util.*;
 
 @Service
 @Transactional
@@ -36,10 +39,17 @@ public class EchantillonService implements IEchantillonService {
     @Autowired
     ImageRepository imageRepository;
 
+    @Autowired
+    EchantillonStorageService  echantillonStorageService;
+
+
+
     @Override
     public Collection<EchantillonResponce> GetNotIndexedEchantillons() {
 
-        Collection<Echantillon> echantillons = echantillonRepository.GetNotIndexedEchantillons(Stade.NOT_INDEXED);
+
+      // List<Echantillon> echantillons = entityManager.createQuery(jpql, Echantillon.class).getResultList();
+        Collection<Echantillon> echantillons = echantillonRepository.GetNotIndexedEchantillons();
 
         Collection<EchantillonResponce> echantillonResponces = new ArrayList<>();
 
@@ -94,6 +104,7 @@ public class EchantillonService implements IEchantillonService {
         else{
             Echantillon echantillon = echantillonRepository.getById(setStadeEchantillon.getId());
             echantillon.setStade(setStadeEchantillon.getStade());
+            echantillonRepository.save(echantillon);
 
         }
 
@@ -101,36 +112,72 @@ public class EchantillonService implements IEchantillonService {
     }
 
     @Override
-    public void SaveIndexedEchantillon(EchantillonIndexedRequest echantillonIndexedRequest) {
+    public EchantillonDetailsResponse SaveIndexedEchantillon(EchantillonIndexedRequest echantillonIndexedRequest , MultipartFile[] files  ) {
 
+        EchantillonDetailsResponse echantillonDetailsResponse = new EchantillonDetailsResponse();
+        List<String> fileNames = new ArrayList<>();
         if(medcinRepository.findById(echantillonIndexedRequest.getMedcinID())==null) throw new RuntimeException(".. ");
         else {
             Echantillon echantillon = new Echantillon();
+
+
             BeanUtils.copyProperties(echantillonIndexedRequest, echantillon);
 
-            echantillon.setDate_acquisition(new Date());
+            Date date = new Date();
 
-            echantillon.setStade(echantillonIndexedRequest.getStade());
+            echantillon.setDate_acquisition(date);
 
-            Collection<ImageDto> imageDtos = echantillonIndexedRequest.getImageDtos();
+
 
             Collection<Image> images = new ArrayList<>();
 
-            Medcin medcin = medcinRepository.getById(echantillonIndexedRequest.getMedcinID());
-            echantillon.setMedcin(medcin);
-
-            imageDtos.forEach(imageDto -> {
+            Arrays.asList(files).stream().forEach(file -> {
+                String[]  saved_file_info = echantillonStorageService.save(file);
                 Image image = new Image();
-                BeanUtils.copyProperties(imageDto, image);
+                image.setUrl(saved_file_info[0]);
+                image.setEchantillon(echantillon);
+                imageRepository.save(image);
                 images.add(image);
-
+                fileNames.add(saved_file_info[0]);
             });
 
             echantillon.setImages(images);
+
+            echantillon.setStade(echantillonIndexedRequest.getStade());
+
+
+            Collection<ImageDto> imageDtos = new ArrayList<>();
+
+           // Collection<Image> images = new ArrayList<>();
+
+          //  Medcin medcin = medcinRepository.getById(echantillon.getMedcin());
+           // echantillon.setMedcin(medcin);
+
+            images.forEach(image -> {
+                ImageDto imageDto = new ImageDto();
+                BeanUtils.copyProperties(image,imageDto);
+                imageDtos.add(imageDto);
+
+            });
+
+
+
             echantillonRepository.save(echantillon);
+            BeanUtils.copyProperties(echantillon,echantillonDetailsResponse);
+
+            echantillonDetailsResponse.setImagesDto(imageDtos);
+
+           // echantillon.setImages(images);
+
+
+
+
 
         }
 
+
+
+        return echantillonDetailsResponse;
     }
 
 
