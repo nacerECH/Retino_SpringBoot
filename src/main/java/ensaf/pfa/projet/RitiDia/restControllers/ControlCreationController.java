@@ -32,9 +32,9 @@ public class ControlCreationController {
         String message = "";
         try{
             List<String> fileNames = new ArrayList<>();
-            controlService.addControl(medcin_id,patient_id,aquisitions, sod, sog);
+            Long controlID = controlService.addControl(medcin_id,patient_id,aquisitions, sod, sog);
             message = "Uploaded the files successfully: " + fileNames;
-            return ResponseEntity.status(HttpStatus.OK).body(message);
+            return ResponseEntity.status(HttpStatus.OK).body(controlID);
         }catch (Exception e) {
             message = "ERROR : "+e.getMessage() +"\n CAUSE : "+e.getCause();
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(message);

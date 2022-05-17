@@ -191,7 +191,7 @@ public class ControlService implements IControlService {
 
 
 
-    public void addControl(Long medcinID, Long patientID, MultipartFile[] files, String sod, String sog){
+    public Long addControl(Long medcinID, Long patientID, MultipartFile[] files, String sod, String sog){
 
         Control control = new Control();
         Optional<Patient> patient = patientRepository.findById(patientID);
@@ -214,7 +214,9 @@ public class ControlService implements IControlService {
             Aquisition aquisition = new Aquisition();
             aquisition.setType_oeil(Eye.valueOf(saved_file_info[1]));
             aquisition.setUuid(UUID.randomUUID());
-            aquisition.setUrl(AppConstants.LOAD_URL+"/"+saved_file_info[0]);
+//            aquisition.setUrl(AppConstants.LOAD_URL+"/"+saved_file_info[0]);
+            aquisition.setUrl("uploads/files/"+saved_file_info[0]);
+
             aquisition.setControle(control);
             aquisitions.add(aquisition);
             fileNames.add(saved_file_info[0]);
@@ -226,6 +228,7 @@ public class ControlService implements IControlService {
         stadePatient.setControle(control);
         control.setStadePatient(stadePatient);
         dateControl.setControle(control);
-        controlRepository.save(control);
+        Control savedControl =  controlRepository.save(control);
+        return savedControl.getId();
     }
 }

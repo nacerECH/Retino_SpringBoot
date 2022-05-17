@@ -34,7 +34,7 @@ public class ControlResource {
         return new ResponseEntity<>(control,HttpStatus.OK);
     }
 
-    @PutMapping("/{control_id}/update")
+    @PostMapping("/{control_id}/update")
     public ResponseEntity<Object> setBilanToControl(@PathVariable("control_id") Long id, @RequestBody ControlWithBilanReq control){
         ControlWithBilanRep response = controlService.updateControl(id,control);
         return new ResponseEntity<>(response, HttpStatus.OK);
