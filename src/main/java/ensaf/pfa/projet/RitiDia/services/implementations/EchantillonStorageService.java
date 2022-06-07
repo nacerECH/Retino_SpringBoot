@@ -18,6 +18,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Random;
 import java.util.stream.Stream;
 
 @Service
@@ -46,16 +47,17 @@ public class EchantillonStorageService implements IEchantillonStorageService {
             String filename = file.getOriginalFilename();
             String[] filename_split = filename.split("\\.");
             String[] stored_filename = new String[2];
+            Random rd = new Random();
 
             if (filename_split[0].endsWith("OG")) {
                 stored_filename[0] = filename.replace(filename_split[0],
-                        String.valueOf(System.currentTimeMillis()) + "_left");
+                        String.valueOf(System.currentTimeMillis())+ "_"+rd.nextInt(100)+ "_left");
                 stored_filename[1] = String.valueOf(Eye.LEFT);
 
 
             } else if (filename_split[0].endsWith("OD")) {
                 stored_filename[0] = filename.replace(filename_split[0],
-                        String.valueOf(System.currentTimeMillis()) + "_right");
+                        String.valueOf(System.currentTimeMillis())+ "_"+rd.nextInt(100) + "_right");
                 stored_filename[1] = String.valueOf(Eye.RIGHT);
 
             } else {

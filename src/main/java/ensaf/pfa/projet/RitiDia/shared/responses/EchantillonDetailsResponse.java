@@ -1,6 +1,7 @@
 package ensaf.pfa.projet.RitiDia.shared.responses;
 
 import ensaf.pfa.projet.RitiDia.entities.Image;
+import ensaf.pfa.projet.RitiDia.entities.Medcin;
 import ensaf.pfa.projet.RitiDia.entities.enumerations.Eye;
 import ensaf.pfa.projet.RitiDia.entities.enumerations.Stade;
 import ensaf.pfa.projet.RitiDia.shared.dto.ImageDto;
@@ -19,7 +20,8 @@ import java.util.Date;
 public class EchantillonDetailsResponse  implements Serializable {
     private Long id;
 
-  //  private Medcin medcin;
+    //private Long medcinID;
+    //private Medcin medcin;
    // private Date create_at;
    private Date date_acquisition;
     private Eye eye ;

@@ -36,7 +36,11 @@ public class PatientController {
             patientRep.setMessage("Le patient a été bien ajouté!");
             return new ResponseEntity<>(patientRep,HttpStatus.CREATED);
         }catch(RuntimeException re){
-            return new ResponseEntity<>(re.getMessage(),HttpStatus.EXPECTATION_FAILED);
+            if(re.getMessage() == "Le patient est déjà existé!") {
+                return new ResponseEntity<>(re.getMessage(),HttpStatus.IM_USED);
+            } else {
+                return new ResponseEntity<>(re.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
 
     }

@@ -18,7 +18,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ensaf.pfa.projet.RitiDia.entities.enumerations.Stade;
 //import org.apache.commons.io.IOUtils;
+
 
 
 import java.io.IOException;
@@ -37,9 +39,9 @@ public class EchantillonController {
 
 
 
-    @GetMapping("/NotIndexedEchantillons")
-    public ResponseEntity<?> getNotIndexedEchantillons(){
-        Collection<EchantillonResponce> echantillonResponces = echantillonService.GetNotIndexedEchantillons();
+    @GetMapping("{medcinID}/NotIndexedEchantillons")
+    public ResponseEntity<?> getNotIndexedEchantillons(@PathVariable("medcinID") String medcinID){
+        Collection<EchantillonResponce> echantillonResponces = echantillonService.GetNotIndexedEchantillons(Long.parseLong(medcinID));
         return new ResponseEntity<Collection<EchantillonResponce>>(echantillonResponces, HttpStatus.OK);
     }
 
@@ -74,6 +76,7 @@ public class EchantillonController {
 
 
         echantillonIndexedRequest.setMedcinID(Long.parseLong(medcinID));
+
         echantillonIndexedRequest.setEye(Eye.valueOf(eye));
         echantillonIndexedRequest.setStade(Stade.valueOf(stade));
         List<String> images2 = new ArrayList<>();
@@ -90,8 +93,11 @@ public class EchantillonController {
     @GetMapping(value = "image/{image_name}")
     public ResponseEntity<byte[]> fromClasspathAsResEntity(@PathVariable("image_name") String image_name) throws IOException {
 
-        String url = "/uploads/Collection/"+image_name;
+        String url = "uploads/Collection/"+image_name;
+        System.out.println(url);
         ClassPathResource imageFile = new ClassPathResource(url);
+       // FileResourcesUtils app = new FileResourcesUtils();
+        //File imageFile =
 
         byte[] imageBytes = StreamUtils.copyToByteArray(imageFile.getInputStream());
 

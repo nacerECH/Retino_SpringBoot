@@ -26,6 +26,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST,SecurityConstants.AUTHORIZED_URL)
                 .permitAll()
                 .antMatchers(HttpMethod.GET,"/uploads/files/**").permitAll()
+                .antMatchers(HttpMethod.GET,"/Echantillon/image/**").permitAll()
                 .anyRequest().authenticated()
                 .and().addFilter(getAuthenticationFilter())
                 .addFilter(new AuthorizationFilter(authenticationManager()))

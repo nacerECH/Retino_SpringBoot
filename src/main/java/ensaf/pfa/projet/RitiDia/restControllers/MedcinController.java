@@ -44,7 +44,12 @@ public class MedcinController {
             BeanUtils.copyProperties(saved_medcin,resulted_medcin);
             return new ResponseEntity<>(HttpStatus.OK).ok(resulted_medcin);
         }catch (RuntimeException e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.IM_USED);
+            if(e.getMessage() == "Ce medcin est déjà existé!"){
+                return new ResponseEntity<>(e.getMessage(),HttpStatus.IM_USED);
+            }else{
+                return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
         }
 
     }

@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface IEchantillonService {
 
-    public Collection<EchantillonResponce> GetNotIndexedEchantillons();
+    public Collection<EchantillonResponce> GetNotIndexedEchantillons(Long medcin_id);
 
     public EchantillonDetailsDto getSingleEchantillon(Long id);
 

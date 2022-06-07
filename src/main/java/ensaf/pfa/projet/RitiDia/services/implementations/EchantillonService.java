@@ -6,10 +6,11 @@ import ensaf.pfa.projet.RitiDia.Repositories.ImageRepository;
 import ensaf.pfa.projet.RitiDia.Repositories.MedcinRepository;
 import ensaf.pfa.projet.RitiDia.entities.Echantillon;
 import ensaf.pfa.projet.RitiDia.entities.Image;
-import ensaf.pfa.projet.RitiDia.entities.enumerations.Stade;
+import ensaf.pfa.projet.RitiDia.entities.Medcin;
+
 import ensaf.pfa.projet.RitiDia.services.interfaces.IEchantillonService;
 import ensaf.pfa.projet.RitiDia.shared.dto.EchantillonDetailsDto;
-import ensaf.pfa.projet.RitiDia.shared.dto.EchantillonDto;
+
 import ensaf.pfa.projet.RitiDia.shared.dto.ImageDto;
 import ensaf.pfa.projet.RitiDia.shared.requests.EchantillonIndexedRequest;
 import ensaf.pfa.projet.RitiDia.shared.requests.SetStadeEchantillon;
@@ -45,11 +46,11 @@ public class EchantillonService implements IEchantillonService {
 
 
     @Override
-    public Collection<EchantillonResponce> GetNotIndexedEchantillons() {
+    public Collection<EchantillonResponce> GetNotIndexedEchantillons(Long medcin_id) {
 
 
       // List<Echantillon> echantillons = entityManager.createQuery(jpql, Echantillon.class).getResultList();
-        Collection<Echantillon> echantillons = echantillonRepository.GetNotIndexedEchantillons();
+        Collection<Echantillon> echantillons = echantillonRepository.GetNotIndexedEchantillons(medcin_id);
 
         Collection<EchantillonResponce> echantillonResponces = new ArrayList<>();
 
@@ -74,6 +75,7 @@ public class EchantillonService implements IEchantillonService {
             echantillonDetailsDto.setId(echantillon.getId());
             BeanUtils.copyProperties(echantillon,echantillonDetailsDto);
 
+
             Collection<Image> images = echantillon.getImages();
 
             Collection<ImageDto> imageDtos = new ArrayList<>();
@@ -89,7 +91,6 @@ public class EchantillonService implements IEchantillonService {
 
 
             return  echantillonDetailsDto;
-
 
 
 
@@ -123,9 +124,15 @@ public class EchantillonService implements IEchantillonService {
 
             BeanUtils.copyProperties(echantillonIndexedRequest, echantillon);
 
+          Medcin medcin =  medcinRepository.getById(echantillonIndexedRequest.getMedcinID());
+
+
+          echantillon.setMedcin(medcin);
             Date date = new Date();
 
             echantillon.setDate_acquisition(date);
+
+
 
 
 
